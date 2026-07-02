@@ -1,0 +1,18 @@
+diff --git a/node_modules/comcigan-parser/index.js b/node_modules/comcigan-parser/index.js
+index caa9e40..8a27f1a 100644
+--- a/node_modules/comcigan-parser/index.js
++++ b/node_modules/comcigan-parser/index.js
+@@ -293,7 +293,12 @@ class Timetable {
+   _getClassTimetable(codeConfig, grade, classNumber) {
+     const args = [codeConfig.data, grade, classNumber];
+     const call = codeConfig.functioName + '(' + args.join(',') + ')';
+-    const script = codeConfig.script + '\n\n' + call;
++    let script = codeConfig.script + '\n\n' + call;
++
++    script = script.replace(
++      'numberPart = 일일자료.substring(1);',
++      'var numberPart = 일일자료.substring(1);'
++    );
+ 
+     /** DEAD: Sorry about using eval() **/
+     const res = eval(script);
