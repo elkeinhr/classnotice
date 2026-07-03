@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
+import { sendPushToAll } from "@/lib/push";
 
 export const runtime = "nodejs";
 
@@ -268,7 +269,15 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json(mapNotice(data), { status: 201 });
+    const savedNotice = mapNotice(data);
+
+    await sendPushToAll({
+      title: "새 공지가 등록되었습니다",
+      body: `[${savedNotice.category}] ${savedNotice.title}`,
+      url: `/noticelist/${savedNotice.id}`,
+    });
+
+    return NextResponse.json(savedNotice, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(
       {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import PushSubscribeButton from "@/components/PushSubscribeButton";
 
 type Lesson = {
   grade: number;
@@ -133,7 +134,8 @@ export default function Home() {
   const hasMoreNotices = todayNotices.length > 10;
   return (
     <div className="box">
-      <h1 className="title" style={{fontSize: 30}}>오늘의 공지</h1>
+      <h1 className="title" style={{fontSize: 30}}>우리 반 소식</h1>
+      <PushSubscribeButton />
       <div className="sub-box">
         <h2 className="sub-title">[오늘의 시간표]</h2>
         <div className="mt-5 mb-5">
