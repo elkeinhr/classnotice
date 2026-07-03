@@ -135,7 +135,9 @@ export default function Home() {
   return (
     <div className="box">
       <h1 className="title" style={{fontSize: 30}}>우리 반 소식</h1>
-      <PushSubscribeButton />
+      <div style={{ margin: "12px 0" }}>
+        <PushSubscribeButton />
+      </div>
       <div className="sub-box">
         <h2 className="sub-title">[오늘의 시간표]</h2>
         <div className="mt-5 mb-5">
