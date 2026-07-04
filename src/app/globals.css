@@ -35,20 +35,19 @@ body {
 .box {
   display: block;
   width: 100%;
-  max-width: 540px;
+  max-width: 800px;
   min-height: 0px;
   background-color: white;
   padding: 5px;
   border: 1px solid black;
   border-radius: 15px;
-  margin: 100px auto 0 auto;
+  margin: 0 auto;
   position: relative;
 }
 
 .sub-box {
   display: block;
   width: 100%;
-  max-width: 500px;
   min-height: 0px;
   background-color: white;
   padding: 15px;
