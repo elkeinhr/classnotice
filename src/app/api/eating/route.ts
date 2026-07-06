@@ -80,40 +80,43 @@ async function getMeal(
   }
 }
 
-function formatDate(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-  return `${year}${month}${day}`;
+function getKstDateString(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
+  return formatter.format(date);
 }
 
-function getTodayDateString() {
-  return formatDate(new Date());
+function toNeisDate(dateString: string) {
+  return dateString.replaceAll("-", "");
 }
 
-function getWeekDates() {
-  const today = new Date();
+function getKstDateObject(dateString: string) {
+  return new Date(`${dateString}T12:00:00+09:00`);
+}
+
+function addDaysKst(dateString: string, days: number) {
+  const date = getKstDateObject(dateString);
+  date.setDate(date.getDate() + days);
+  return getKstDateString(date);
+}
+
+function getThisMondayKst(todayString: string) {
+  const today = getKstDateObject(todayString);
   const day = today.getDay();
 
-  const monday = new Date(today);
-
-  // JS 기준: 일요일 0, 월요일 1, 화요일 2 ...
   const diffToMonday = day === 0 ? -6 : 1 - day;
 
-  monday.setDate(today.getDate() + diffToMonday);
+  today.setDate(today.getDate() + diffToMonday);
 
-  const weekdays = ["월", "화", "수", "목", "금"];
-
-  return weekdays.map((weekday, index) => {
-    const date = new Date(monday);
-    date.setDate(monday.getDate() + index);
-
-    return {
-      weekday,
-      date: formatDate(date),
-    };
-  });
+  return getKstDateString(today);
 }
 
 export async function GET(request: Request) {
@@ -121,7 +124,9 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     const schoolName = searchParams.get("name") ?? "대전대성고등학교";
-    const date = searchParams.get("date") ?? getTodayDateString();
+
+    const todayKst = getKstDateString();
+    const date = searchParams.get("date") ?? toNeisDate(todayKst);
 
     const schools = await getSchool(schoolName);
 
@@ -157,7 +162,16 @@ export async function GET(request: Request) {
     "3"
     );
 
-    const weekDates = getWeekDates();
+    const mondayKst = getThisMondayKst(todayKst);
+
+    const weekDates = ["월", "화", "수", "목", "금"].map((weekday, index) => {
+      const dateString = addDaysKst(mondayKst, index);
+
+      return {
+        weekday,
+        date: toNeisDate(dateString),
+      };
+    });
 
     const weekLunch = await Promise.all(
       weekDates.map(async (dayInfo) => {
